@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.crazecoder.flutterbugly">
+    package="com.crazecoder.flutterbugly"
+    xmlns:tools="http://schemas.android.com/tools">
     <application>
         <provider
                 android:name="androidx.core.content.FileProvider"
@@ -8,7 +9,8 @@
                 android:grantUriPermissions="true">
             <meta-data
                     android:name="android.support.FILE_PROVIDER_PATHS"
-                    android:resource="@xml/provider_paths" />
+                    android:resource="@xml/provider_paths"
+                    tools:replace="android:resource"/>
         </provider>
     </application>
 </manifest>
