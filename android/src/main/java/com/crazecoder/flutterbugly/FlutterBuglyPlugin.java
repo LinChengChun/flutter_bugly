@@ -23,6 +23,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import android.os.Handler;
 
 /**
  * FlutterBuglyPlugin
@@ -70,7 +71,6 @@ public class FlutterBuglyPlugin implements MethodCallHandler {
         channel.setMethodCallHandler(new FlutterBuglyPlugin(registrar.activity()));
     }
 
-    final Handler mHandler = new Handler();
     @Override
     public void onMethodCall(final MethodCall call, final Result result) {
         if (call.method.equals("initBugly")) {
@@ -103,20 +103,10 @@ public class FlutterBuglyPlugin implements MethodCallHandler {
                 }
                 Beta.canShowUpgradeActs.add(activity.getClass());
                 Bugly.init(activity.getApplicationContext(), call.argument("appId").toString(), BuildConfig.DEBUG);
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        result.success("Bugly 初始化成功");
-                    }
-                });
+                result.success("Bugly 初始化成功");
 
             } else {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        result.success("Bugly key不能为空");
-                    }
-                });
+                result.success("Bugly key不能为空");
             }
         } else if (call.method.equals("checkUpgrade")) {
             boolean isManual = false;
@@ -128,20 +118,10 @@ public class FlutterBuglyPlugin implements MethodCallHandler {
                 isSilence = call.argument("isSilence");
             }
             Beta.checkUpgrade(isManual, isSilence);
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    result.success(null);
-                }
-            });
+            result.success(null);
         } else if (call.method.equals("upgradeListener")) {
             UpgradeInfo strategy = Beta.getUpgradeInfo();
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    result.success(JsonUtil.toJson(MapUtil.deepToMap(strategy)));
-                }
-            });
+            result.success(JsonUtil.toJson(MapUtil.deepToMap(strategy)));
         } else if (call.method.equals("postCatchedException")) {
             String message = "";
             String detail = null;
@@ -186,20 +166,11 @@ public class FlutterBuglyPlugin implements MethodCallHandler {
             Throwable throwable = new Throwable(message);
             throwable.setStackTrace(elements.toArray(elementsArray));
             CrashReport.postCatchedException(throwable);
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    result.success(null);
-                }
-            });
+            result.success(null);
         } else {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    result.notImplemented();
-                }
-            });
+            result.notImplemented();
         }
+
     }
 
 }
