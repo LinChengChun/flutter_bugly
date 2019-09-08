@@ -70,6 +70,7 @@ public class FlutterBuglyPlugin implements MethodCallHandler {
         channel.setMethodCallHandler(new FlutterBuglyPlugin(registrar.activity()));
     }
 
+    final Handler mHandler = new Handler();
     @Override
     public void onMethodCall(final MethodCall call, final Result result) {
         if (call.method.equals("initBugly")) {
@@ -102,10 +103,20 @@ public class FlutterBuglyPlugin implements MethodCallHandler {
                 }
                 Beta.canShowUpgradeActs.add(activity.getClass());
                 Bugly.init(activity.getApplicationContext(), call.argument("appId").toString(), BuildConfig.DEBUG);
-                result.success("Bugly 初始化成功");
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success("Bugly 初始化成功");
+                    }
+                });
 
             } else {
-                result.success("Bugly key不能为空");
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.success("Bugly key不能为空");
+                    }
+                });
             }
         } else if (call.method.equals("checkUpgrade")) {
             boolean isManual = false;
@@ -117,10 +128,20 @@ public class FlutterBuglyPlugin implements MethodCallHandler {
                 isSilence = call.argument("isSilence");
             }
             Beta.checkUpgrade(isManual, isSilence);
-            result.success(null);
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    result.success(null);
+                }
+            });
         } else if (call.method.equals("upgradeListener")) {
             UpgradeInfo strategy = Beta.getUpgradeInfo();
-            result.success(JsonUtil.toJson(MapUtil.deepToMap(strategy)));
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    result.success(JsonUtil.toJson(MapUtil.deepToMap(strategy)));
+                }
+            });
         } else if (call.method.equals("postCatchedException")) {
             String message = "";
             String detail = null;
@@ -165,11 +186,20 @@ public class FlutterBuglyPlugin implements MethodCallHandler {
             Throwable throwable = new Throwable(message);
             throwable.setStackTrace(elements.toArray(elementsArray));
             CrashReport.postCatchedException(throwable);
-            result.success(null);
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    result.success(null);
+                }
+            });
         } else {
-            result.notImplemented();
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    result.notImplemented();
+                }
+            });
         }
-
     }
 
 }
