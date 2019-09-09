@@ -135,7 +135,7 @@ public class FlutterBuglyPlugin implements MethodCallHandler {
               }
             });
         } else if (call.method.equals("upgradeListener")) {
-            UpgradeInfo strategy = Beta.getUpgradeInfo();
+            final UpgradeInfo strategy = Beta.getUpgradeInfo();
             mHandler.post(new Runnable() {
               @Override
               public void run() {
